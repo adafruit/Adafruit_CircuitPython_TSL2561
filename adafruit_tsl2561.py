@@ -51,26 +51,33 @@ class TSL2561():
 
     @property
     def lux(self, ):
+        """The computed lux value."""
         return self._compute_lux()
 
     @property
     def broadband(self, ):
+        """The broadband channel value."""
         return self._read_broadband()
 
     @property
     def infrared(self, ):
+        """The infrared channel value."""
         return self._read_infrared()
 
     @property
     def luminosity(self, ):
+        """The overall luminosity as a tuple containing the broadband
+        channel and the infrared channel value."""
         return (self.broadband, self.infrared)
 
     @property
     def enabled(self, ):
+        """The state of the sensor."""
         return self._enabled
 
     @enabled.setter
     def enabled(self, enable):
+        """Enable or disable the sensor."""
         if enable:
             self._enable()
         else:
