@@ -32,12 +32,16 @@ from adafruit_bus_device.i2c_device import I2CDevice
 TSL2561_DEFAULT_ADDRESS = 0x39
 TSL2561_COMMAND_BIT = 0x80
 TSL2561_WORD_BIT = 0x20
-TSL2561_REGISTER_CHAN0_LOW = 0x0C
-TSL2561_REGISTER_CHAN1_LOW = 0x0E
-TSL2561_REGISTER_CONTROL = 0x00
+
 TSL2561_CONTROL_POWERON = 0x03
 TSL2561_CONTROL_POWEROFF = 0x00
+
+TSL2561_REGISTER_CONTROL = 0x00
+TSL2561_REGISTER_TIMING = 0x01
+TSL2561_REGISTER_CHAN0_LOW = 0x0C
+TSL2561_REGISTER_CHAN1_LOW = 0x0E
 TSL2561_REGISTER_ID = 0x0A
+
 
 class TSL2561():
 
@@ -57,6 +61,19 @@ class TSL2561():
         partno = (id >> 4 ) & 0x0f
         revno = id & 0x0f
         return (partno, revno)
+
+    @property
+    def enabled(self, ):
+        """The state of the sensor."""
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, enable):
+        """Enable or disable the sensor."""
+        if enable:
+            self._enable()
+        else:
+            self._disable()
 
     @property
     def lux(self, ):
@@ -80,17 +97,32 @@ class TSL2561():
         return (self.broadband, self.infrared)
 
     @property
-    def enabled(self, ):
-        """The state of the sensor."""
-        return self._enabled
+    def gain(self, ):
+        return self._read_register(TSL2561_REGISTER_TIMING) >> 4 & 0x01
 
-    @enabled.setter
-    def enabled(self, enable):
-        """Enable or disable the sensor."""
-        if enable:
-            self._enable()
-        else:
-            self._disable()
+    @gain.setter
+    def gain(self, value):
+        value &= 0x01
+        value <<= 4
+        current = self._read_register(TSL2561_REGISTER_TIMING)
+        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING
+        self.buf[1] = (current & 0xef) | value
+        with self.i2c_device as i2c:
+            i2c.write(self.buf, end=2)
+
+    @property
+    def integration_time(self, ):
+        current = self._read_register(TSL2561_REGISTER_TIMING)
+        return current & 0x03
+
+    @integration_time.setter
+    def integration_time(self, time):
+        time &= 0x03
+        current = self._read_register(TSL2561_REGISTER_TIMING)
+        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING
+        self.buf[1] = (current & 0xfc) | time
+        with self.i2c_device as i2c:
+            i2c.write(self.buf, end=2)
 
     def _compute_lux(self, ):
         pass
@@ -103,12 +135,6 @@ class TSL2561():
         self._write_control_register(TSL2561_CONTROL_POWEROFF)
         self._enabled = False
 
-    def _write_control_register(self, reg):
-        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL
-        self.buf[1] = reg
-        with self.i2c_device as i2c:
-            i2c.write(self.buf, end=2)
-
     def _read_register(self, reg, count=1):
         self.buf[0] = TSL2561_COMMAND_BIT | reg
         if count == 2:
@@ -120,6 +146,13 @@ class TSL2561():
             return (self.buf[1])
         elif count == 2:
             return (self.buf[1], self.buf[2])
+
+    def _write_control_register(self, reg):
+        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL
+        self.buf[1] = reg
+        with self.i2c_device as i2c:
+            i2c.write(self.buf, end=2)
+
 
     def _read_broadband(self, ):
 #  *broadband = read16(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN0_LOW);
