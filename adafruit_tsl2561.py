@@ -37,6 +37,7 @@ TSL2561_REGISTER_CHAN1_LOW = 0x0E
 TSL2561_REGISTER_CONTROL = 0x00
 TSL2561_CONTROL_POWERON = 0x03
 TSL2561_CONTROL_POWEROFF = 0x00
+TSL2561_REGISTER_ID = 0x0A
 
 class TSL2561():
 
@@ -48,6 +49,14 @@ class TSL2561():
             import busio
             i2c = busio.I2C(board.SCL, board.SDA)
         self.i2c_device = I2CDevice(i2c, address)
+
+    @property
+    def id(self, ):
+        """A tuple containing the part number and the revision number."""
+        id = self._read_register(TSL2561_REGISTER_ID)
+        partno = (id >> 4 ) & 0x0f
+        revno = id & 0x0f
+        return (partno, revno)
 
     @property
     def lux(self, ):
@@ -87,32 +96,37 @@ class TSL2561():
         pass
 
     def _enable(self, ):
-        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL
-        self.buf[1] = TSL2561_CONTROL_POWERON
-        with self.i2c_device as i2c:
-            i2c.write(self.buf, end=2, stop=False)
+        self._write_control_register(TSL2561_CONTROL_POWERON)
         self._enabled = True
 
     def _disable(self, ):
-        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL
-        self.buf[1] = TSL2561_CONTROL_POWEROFF
-        with self.i2c_device as i2c:
-            i2c.write(self.buf, end=2, stop=False)
+        self._write_control_register(TSL2561_CONTROL_POWEROFF)
         self._enabled = False
 
-    def _read_reg(self, reg):
-        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | reg
+    def _write_control_register(self, reg):
+        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL
+        self.buf[1] = reg
+        with self.i2c_device as i2c:
+            i2c.write(self.buf, end=2)
+
+    def _read_register(self, reg, count=1):
+        self.buf[0] = TSL2561_COMMAND_BIT | reg
+        if count == 2:
+            self.buf[0] |= TSL2561_WORD_BIT
         with self.i2c_device as i2c:
             i2c.write(self.buf, end=1, stop=False)
             i2c.read_into(self.buf, start=1)
-        return (self.buf[1], self.buf[2])
+        if count == 1:
+            return (self.buf[1])
+        elif count == 2:
+            return (self.buf[1], self.buf[2])
 
     def _read_broadband(self, ):
 #  *broadband = read16(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN0_LOW);
-        low, high = self._read_reg(TSL2561_REGISTER_CHAN0_LOW)
+        low, high = self._read_register(TSL2561_REGISTER_CHAN0_LOW, 2)
         return high << 8 | low
 
     def _read_infrared(self, ):
 #  *ir = read16(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN1_LOW);
-        low, high = self._read_reg(TSL2561_REGISTER_CHAN1_LOW)
+        low, high = self._read_register(TSL2561_REGISTER_CHAN1_LOW, 2)
         return high << 8 | low
