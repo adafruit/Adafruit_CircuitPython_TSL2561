@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`adafruit_CircuitPython_TSL2561`
+`adafruit__tsl2561`
 ====================================================
 
 CircuitPython driver for TSL2561 Light Sensor.
@@ -45,6 +45,7 @@ TSL2561_REGISTER_ID = 0x0A
 SCALE = (1 / 0.034, 1 / 0.252, 1)
 
 class TSL2561():
+    """Class which provides interface to TSL2561 light sensor."""
 
     def __init__(self, address=TSL2561_DEFAULT_ADDRESS, i2c=None, **kwargs):
         self.buf = bytearray(3)
