@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`adafruit__tsl2561`
+`adafruit_tsl2561`
 ====================================================
 
 CircuitPython driver for TSL2561 Light Sensor.
@@ -42,7 +42,7 @@ TSL2561_REGISTER_CHAN0_LOW = 0x0C
 TSL2561_REGISTER_CHAN1_LOW = 0x0E
 TSL2561_REGISTER_ID = 0x0A
 
-SCALE = (1 / 0.034, 1 / 0.252, 1)
+TSL2561_SCALE = (1 / 0.034, 1 / 0.252, 1)
 
 class TSL2561():
     """Class which provides interface to TSL2561 light sensor."""
@@ -154,7 +154,7 @@ class TSL2561():
         if not self.gain:
             lux *= 16
         # correct for integration time
-        lux *= SCALE[self.integration_time]
+        lux *= TSL2561_SCALE[self.integration_time]
         return lux
 
     def _enable(self, ):
