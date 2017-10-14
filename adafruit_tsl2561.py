@@ -146,6 +146,9 @@ class TSL2561():
             lux = 0.00146 * ch0 - 0.00112 * ch1
         elif ratio > 1.30:
             lux = 0
+        # Pretty sure the floating point math formula on pg. 23 of datasheet
+        # is based on 16x gain and 402ms integration time. Need to scale
+        # result for other settings.
         # correct for gain
         if not self.gain:
             lux *= 16
