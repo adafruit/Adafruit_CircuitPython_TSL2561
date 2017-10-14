@@ -42,12 +42,12 @@ TSL2561_REGISTER_CHAN0_LOW = 0x0C
 TSL2561_REGISTER_CHAN1_LOW = 0x0E
 TSL2561_REGISTER_ID = 0x0A
 
+SCALE = (1 / 0.034, 1 / 0.252, 1)
 
 class TSL2561():
 
     def __init__(self, address=TSL2561_DEFAULT_ADDRESS, i2c=None, **kwargs):
         self.buf = bytearray(3)
-        self._enabled = False
         if i2c is None:
             import board
             import busio
@@ -65,7 +65,10 @@ class TSL2561():
     @property
     def enabled(self, ):
         """The state of the sensor."""
-        return self._enabled
+        if self._read_register(TSL2561_REGISTER_CONTROL) & 0x03:
+            return True
+        else:
+            return False
 
     @enabled.setter
     def enabled(self, enable):
@@ -98,10 +101,12 @@ class TSL2561():
 
     @property
     def gain(self, ):
+        """The gain. 0:1x, 1:16x."""
         return self._read_register(TSL2561_REGISTER_TIMING) >> 4 & 0x01
 
     @gain.setter
     def gain(self, value):
+        """Set the gain. 0:1x, 1:16x."""
         value &= 0x01
         value <<= 4
         current = self._read_register(TSL2561_REGISTER_TIMING)
@@ -112,11 +117,13 @@ class TSL2561():
 
     @property
     def integration_time(self, ):
+        """The integration time. 0:13.7ms, 1:101ms, 2:402ms, or 3:manual"""
         current = self._read_register(TSL2561_REGISTER_TIMING)
         return current & 0x03
 
     @integration_time.setter
     def integration_time(self, time):
+        """Set the integration time. 0:13.7ms, 1:101ms, 2:402ms, or 3:manual."""
         time &= 0x03
         current = self._read_register(TSL2561_REGISTER_TIMING)
         self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING
@@ -125,15 +132,32 @@ class TSL2561():
             i2c.write(self.buf, end=2)
 
     def _compute_lux(self, ):
-        pass
+        """Based on datasheet for FN package."""
+        ch0, ch1 = self.luminosity
+        if ch0 == 0: return 0
+        ratio = ch1 / ch0
+        if ratio > 0 and ratio <= 0.50:
+            lux = 0.0304 * ch0 - 0.062 * ch0 * ratio**1.4
+        elif ratio > 0.50 and ratio <= 0.61:
+            lux = 0.0224 * ch0 - 0.031 * ch1
+        elif ratio > 0.61 and ratio <= 0.80:
+            lux = 0.0128 * ch0 - 0.0153 * ch1
+        elif ratio > 0.80 and ratio <= 1.30:
+            lux = 0.00146 * ch0 - 0.00112 * ch1
+        elif ratio > 1.30:
+            lux = 0
+        # correct for gain
+        if not self.gain:
+            lux *= 16
+        # correct for integration time
+        lux *= SCALE[self.integration_time]
+        return lux
 
     def _enable(self, ):
         self._write_control_register(TSL2561_CONTROL_POWERON)
-        self._enabled = True
 
     def _disable(self, ):
         self._write_control_register(TSL2561_CONTROL_POWEROFF)
-        self._enabled = False
 
     def _read_register(self, reg, count=1):
         self.buf[0] = TSL2561_COMMAND_BIT | reg
@@ -152,7 +176,6 @@ class TSL2561():
         self.buf[1] = reg
         with self.i2c_device as i2c:
             i2c.write(self.buf, end=2)
-
 
     def _read_broadband(self, ):
 #  *broadband = read16(TSL2561_COMMAND_BIT | TSL2561_WORD_BIT | TSL2561_REGISTER_CHAN0_LOW);
