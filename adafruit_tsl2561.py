@@ -135,9 +135,9 @@ class TSL2561():
     def _compute_lux(self):
         """Based on datasheet for FN package."""
         ch0, ch1 = self.luminosity
-        if ch0 == 0: return 0
-        if ch0 > TSL2561_CLIP_THRESHOLD[self.integration_time]: return 0
-        if ch1 > TSL2561_CLIP_THRESHOLD[self.integration_time]: return 0
+        if ch0 == 0: return None
+        if ch0 > TSL2561_CLIP_THRESHOLD[self.integration_time]: return None
+        if ch1 > TSL2561_CLIP_THRESHOLD[self.integration_time]: return None
         ratio = ch1 / ch0
         if ratio > 0 and ratio <= 0.50:
             lux = 0.0304 * ch0 - 0.062 * ch0 * ratio**1.4
