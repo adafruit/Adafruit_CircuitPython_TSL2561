@@ -10,7 +10,7 @@ Introduction
     :target: https://gitter.im/adafruit/circuitpython?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
     :alt: Gitter
 
-TODO
+CircuitPython driver for TSL2561 Light Sensor.
 
 Dependencies
 =============
@@ -26,7 +26,13 @@ This is easily achieved by downloading
 Usage Example
 =============
 
-TODO
+.. code-block:: python
+
+    >>> import adafruit_tsl2561
+    >>> tsl = adafruit_tsl2561.TSL2561()
+    >>> tsl.enabled = True
+    >>> tsl.light
+    3294.37
 
 Contributing
 ============

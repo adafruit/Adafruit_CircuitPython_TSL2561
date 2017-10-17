@@ -44,6 +44,7 @@ TSL2561_REGISTER_ID         = 0x0A
 
 TSL2561_GAIN_SCALE = (16, 1)
 TSL2561_TIME_SCALE = (1 / 0.034, 1 / 0.252, 1)
+TSL2561_CLIP_THRESHOLD = (4900, 37000, 65000)
 
 class TSL2561():
     """Class which provides interface to TSL2561 light sensor."""
@@ -67,7 +68,7 @@ class TSL2561():
     @property
     def enabled(self):
         """The state of the sensor."""
-        return self._read_register(TSL2561_REGISTER_CONTROL) & 0x03
+        return bool(self._read_register(TSL2561_REGISTER_CONTROL) & 0x03)
 
     @enabled.setter
     def enabled(self, enable):
@@ -134,6 +135,8 @@ class TSL2561():
         """Based on datasheet for FN package."""
         ch0, ch1 = self.luminosity
         if ch0 == 0: return 0
+        if ch0 > TSL2561_CLIP_THRESHOLD[self.integration_time]: return 0
+        if ch1 > TSL2561_CLIP_THRESHOLD[self.integration_time]: return 0
         ratio = ch1 / ch0
         if ratio > 0 and ratio <= 0.50:
             lux = 0.0304 * ch0 - 0.062 * ch0 * ratio**1.4
