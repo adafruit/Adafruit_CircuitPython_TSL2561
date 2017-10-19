@@ -123,12 +123,12 @@ class TSL2561():
         return current & 0x03
 
     @integration_time.setter
-    def integration_time(self, time):
+    def integration_time(self, value):
         """Set the integration time. 0:13.7ms, 1:101ms, 2:402ms, or 3:manual."""
-        time &= 0x03
+        value &= 0x03
         current = self._read_register(TSL2561_REGISTER_TIMING)
         self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING
-        self.buf[1] = (current & 0xfc) | time
+        self.buf[1] = (current & 0xfc) | value
         with self.i2c_device as i2c:
             i2c.write(self.buf, end=2)
 
