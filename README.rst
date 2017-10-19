@@ -28,9 +28,11 @@ Usage Example
 
 .. code-block:: python
 
+    >>> import board
+    >>> import busio
+    >>> i2c = busio.I2C(board.SCL, board.SDA)
     >>> import adafruit_tsl2561
-    >>> tsl = adafruit_tsl2561.TSL2561()
-    >>> tsl.enabled = True
+    >>> tsl = adafruit_tsl2561.TSL2561(i2c)
     >>> tsl.light
     3294.37
 
