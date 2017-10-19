@@ -49,12 +49,8 @@ TSL2561_CLIP_THRESHOLD = (4900, 37000, 65000)
 class TSL2561():
     """Class which provides interface to TSL2561 light sensor."""
 
-    def __init__(self, i2c=None, address=TSL2561_DEFAULT_ADDRESS, **kwargs):
+    def __init__(self, i2c, address=TSL2561_DEFAULT_ADDRESS, **kwargs):
         self.buf = bytearray(3)
-        if i2c is None:
-            import board
-            import busio
-            i2c = busio.I2C(board.SCL, board.SDA)
         self.i2c_device = I2CDevice(i2c, address)
         self.enabled = True
 
