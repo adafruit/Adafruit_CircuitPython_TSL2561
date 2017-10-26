@@ -30,6 +30,8 @@ project = u'Adafruit CIRCUITPYTHON_TSL2561 Library'
 copyright = u'2017 Carter Nelson'
 author = u'Carter Nelson'
 
+autodoc_mock_imports = ['micropython']
+
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
