@@ -27,37 +27,42 @@ CircuitPython driver for TSL2561 Light Sensor.
 
 * Author(s): Carter Nelson
 """
+from micropython import const
 from adafruit_bus_device.i2c_device import I2CDevice
 
-TSL2561_DEFAULT_ADDRESS     = const(0x39)
-TSL2561_COMMAND_BIT         = const(0x80)
-TSL2561_WORD_BIT            = const(0x20)
+_TSL2561_DEFAULT_ADDRESS     = const(0x39)
+_TSL2561_COMMAND_BIT         = const(0x80)
+_TSL2561_WORD_BIT            = const(0x20)
 
-TSL2561_CONTROL_POWERON     = const(0x03)
-TSL2561_CONTROL_POWEROFF    = const(0x00)
+_TSL2561_CONTROL_POWERON     = const(0x03)
+_TSL2561_CONTROL_POWEROFF    = const(0x00)
 
-TSL2561_REGISTER_CONTROL    = const(0x00)
-TSL2561_REGISTER_TIMING     = const(0x01)
-TSL2561_REGISTER_CHAN0_LOW  = const(0x0C)
-TSL2561_REGISTER_CHAN1_LOW  = const(0x0E)
-TSL2561_REGISTER_ID         = const(0x0A)
+_TSL2561_REGISTER_CONTROL    = const(0x00)
+_TSL2561_REGISTER_TIMING     = const(0x01)
+_TSL2561_REGISTER_CHAN0_LOW  = const(0x0C)
+_TSL2561_REGISTER_CHAN1_LOW  = const(0x0E)
+_TSL2561_REGISTER_ID         = const(0x0A)
 
-TSL2561_GAIN_SCALE = (16, 1)
-TSL2561_TIME_SCALE = (1 / 0.034, 1 / 0.252, 1)
-TSL2561_CLIP_THRESHOLD = (4900, 37000, 65000)
+_TSL2561_GAIN_SCALE = (16, 1)
+_TSL2561_TIME_SCALE = (1 / 0.034, 1 / 0.252, 1)
+_TSL2561_CLIP_THRESHOLD = (4900, 37000, 65000)
 
 class TSL2561():
     """Class which provides interface to TSL2561 light sensor."""
 
-    def __init__(self, i2c, address=TSL2561_DEFAULT_ADDRESS, **kwargs):
+    def __init__(self, i2c, address=_TSL2561_DEFAULT_ADDRESS, **kwargs):
         self.buf = bytearray(3)
         self.i2c_device = I2CDevice(i2c, address)
+        partno, revno = self.id
+        # data sheet says TSL2561 = 0001, reality says 0101
+        if not partno == 5:
+            raise RuntimeError('Failed to find TSL2561! Part 0x%x Rev 0x%x' % (partno, revno))
         self.enabled = True
 
     @property
     def id(self):
         """A tuple containing the part number and the revision number."""
-        id = self._read_register(TSL2561_REGISTER_ID)
+        id = self._read_register(_TSL2561_REGISTER_ID)
         partno = (id >> 4 ) & 0x0f
         revno = id & 0x0f
         return (partno, revno)
@@ -65,7 +70,7 @@ class TSL2561():
     @property
     def enabled(self):
         """The state of the sensor."""
-        return (self._read_register(TSL2561_REGISTER_CONTROL) & 0x03) != 0
+        return (self._read_register(_TSL2561_REGISTER_CONTROL) & 0x03) != 0
 
     @enabled.setter
     def enabled(self, enable):
@@ -76,7 +81,7 @@ class TSL2561():
             self._disable()
 
     @property
-    def light(self):
+    def lux(self):
         """The computed lux value."""
         return self._compute_lux()
 
@@ -99,15 +104,15 @@ class TSL2561():
     @property
     def gain(self):
         """The gain. 0:1x, 1:16x."""
-        return self._read_register(TSL2561_REGISTER_TIMING) >> 4 & 0x01
+        return self._read_register(_TSL2561_REGISTER_TIMING) >> 4 & 0x01
 
     @gain.setter
     def gain(self, value):
         """Set the gain. 0:1x, 1:16x."""
         value &= 0x01
         value <<= 4
-        current = self._read_register(TSL2561_REGISTER_TIMING)
-        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING
+        current = self._read_register(_TSL2561_REGISTER_TIMING)
+        self.buf[0] = _TSL2561_COMMAND_BIT | _TSL2561_REGISTER_TIMING
         self.buf[1] = (current & 0xef) | value
         with self.i2c_device as i2c:
             i2c.write(self.buf, end=2)
@@ -115,15 +120,15 @@ class TSL2561():
     @property
     def integration_time(self):
         """The integration time. 0:13.7ms, 1:101ms, 2:402ms, or 3:manual"""
-        current = self._read_register(TSL2561_REGISTER_TIMING)
+        current = self._read_register(_TSL2561_REGISTER_TIMING)
         return current & 0x03
 
     @integration_time.setter
     def integration_time(self, value):
         """Set the integration time. 0:13.7ms, 1:101ms, 2:402ms, or 3:manual."""
         value &= 0x03
-        current = self._read_register(TSL2561_REGISTER_TIMING)
-        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_TIMING
+        current = self._read_register(_TSL2561_REGISTER_TIMING)
+        self.buf[0] = _TSL2561_COMMAND_BIT | _TSL2561_REGISTER_TIMING
         self.buf[1] = (current & 0xfc) | value
         with self.i2c_device as i2c:
             i2c.write(self.buf, end=2)
@@ -132,8 +137,8 @@ class TSL2561():
         """Based on datasheet for FN package."""
         ch0, ch1 = self.luminosity
         if ch0 == 0: return None
-        if ch0 > TSL2561_CLIP_THRESHOLD[self.integration_time]: return None
-        if ch1 > TSL2561_CLIP_THRESHOLD[self.integration_time]: return None
+        if ch0 > _TSL2561_CLIP_THRESHOLD[self.integration_time]: return None
+        if ch1 > _TSL2561_CLIP_THRESHOLD[self.integration_time]: return None
         ratio = ch1 / ch0
         if ratio > 0 and ratio <= 0.50:
             lux = 0.0304 * ch0 - 0.062 * ch0 * ratio**1.4
@@ -149,21 +154,21 @@ class TSL2561():
         # is based on 16x gain and 402ms integration time. Need to scale
         # result for other settings.
         # Scale for gain.
-        lux *= TSL2561_GAIN_SCALE[self.gain]
+        lux *= _TSL2561_GAIN_SCALE[self.gain]
         # Scale for integration time.
-        lux *= TSL2561_TIME_SCALE[self.integration_time]
+        lux *= _TSL2561_TIME_SCALE[self.integration_time]
         return lux
 
     def _enable(self):
-        self._write_control_register(TSL2561_CONTROL_POWERON)
+        self._write_control_register(_TSL2561_CONTROL_POWERON)
 
     def _disable(self):
-        self._write_control_register(TSL2561_CONTROL_POWEROFF)
+        self._write_control_register(_TSL2561_CONTROL_POWEROFF)
 
     def _read_register(self, reg, count=1):
-        self.buf[0] = TSL2561_COMMAND_BIT | reg
+        self.buf[0] = _TSL2561_COMMAND_BIT | reg
         if count == 2:
-            self.buf[0] |= TSL2561_WORD_BIT
+            self.buf[0] |= _TSL2561_WORD_BIT
         with self.i2c_device as i2c:
             i2c.write(self.buf, end=1, stop=False)
             i2c.read_into(self.buf, start=1)
@@ -173,15 +178,15 @@ class TSL2561():
             return (self.buf[1], self.buf[2])
 
     def _write_control_register(self, reg):
-        self.buf[0] = TSL2561_COMMAND_BIT | TSL2561_REGISTER_CONTROL
+        self.buf[0] = _TSL2561_COMMAND_BIT | _TSL2561_REGISTER_CONTROL
         self.buf[1] = reg
         with self.i2c_device as i2c:
             i2c.write(self.buf, end=2)
 
     def _read_broadband(self):
-        low, high = self._read_register(TSL2561_REGISTER_CHAN0_LOW, 2)
+        low, high = self._read_register(_TSL2561_REGISTER_CHAN0_LOW, 2)
         return high << 8 | low
 
     def _read_infrared(self):
-        low, high = self._read_register(TSL2561_REGISTER_CHAN1_LOW, 2)
+        low, high = self._read_register(_TSL2561_REGISTER_CHAN1_LOW, 2)
         return high << 8 | low

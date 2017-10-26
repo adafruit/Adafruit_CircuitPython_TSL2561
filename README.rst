@@ -33,7 +33,7 @@ Usage Example
     >>> i2c = busio.I2C(board.SCL, board.SDA)
     >>> import adafruit_tsl2561
     >>> tsl = adafruit_tsl2561.TSL2561(i2c)
-    >>> tsl.light
+    >>> tsl.lux
     3294.37
 
 Contributing
