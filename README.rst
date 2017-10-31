@@ -2,8 +2,8 @@
 Introduction
 ============
 
-.. image:: https://readthedocs.org/projects/adafruit-circuitpython-CircuitPython_TSL2561/badge/?version=latest
-    :target: https://circuitpython.readthedocs.io/projects/CircuitPython_TSL2561/en/latest/
+.. image:: https://readthedocs.org/projects/adafruit-circuitpython-tsl2561/badge/?version=latest
+    :target: https://circuitpython.readthedocs.io/projects/tsl2561/en/latest/
     :alt: Documentation Status
 
 .. image :: https://badges.gitter.im/adafruit/circuitpython.svg
