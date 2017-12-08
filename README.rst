@@ -6,9 +6,9 @@ Introduction
     :target: https://circuitpython.readthedocs.io/projects/tsl2561/en/latest/
     :alt: Documentation Status
 
-.. image :: https://badges.gitter.im/adafruit/circuitpython.svg
-    :target: https://gitter.im/adafruit/circuitpython?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
-    :alt: Gitter
+.. image :: https://img.shields.io/discord/327254708534116352.svg
+    :target: https://adafru.it/discord
+    :alt: Discord
 
 CircuitPython driver for TSL2561 Light Sensor.
 
@@ -50,4 +50,3 @@ API Reference
    :maxdepth: 2
 
    api
-
