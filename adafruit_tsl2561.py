@@ -183,7 +183,8 @@ class TSL2561():
         if count == 1:
             return self.buf[1]
         elif count == 2:
-            return (self.buf[1], self.buf[2])
+            return self.buf[1], self.buf[2]
+        return None
 
     def _write_control_register(self, reg):
         self.buf[0] = _COMMAND_BIT | _REGISTER_CONTROL
