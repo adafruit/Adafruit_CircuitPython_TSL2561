@@ -148,15 +148,15 @@ class TSL2561():
         if ch1 > _CLIP_THRESHOLD[self.integration_time]:
             return None
         ratio = ch1 / ch0
-        if ratio > 0 and ratio <= 0.50:
+        if ratio >= 0 and ratio <= 0.50:
             lux = 0.0304 * ch0 - 0.062 * ch0 * ratio**1.4
-        elif ratio > 0.50 and ratio <= 0.61:
+        elif ratio <= 0.61:
             lux = 0.0224 * ch0 - 0.031 * ch1
-        elif ratio > 0.61 and ratio <= 0.80:
+        elif ratio <= 0.80:
             lux = 0.0128 * ch0 - 0.0153 * ch1
-        elif ratio > 0.80 and ratio <= 1.30:
+        elif ratio <= 1.30:
             lux = 0.00146 * ch0 - 0.00112 * ch1
-        elif ratio > 1.30:
+        else:
             lux = 0
         # Pretty sure the floating point math formula on pg. 23 of datasheet
         # is based on 16x gain and 402ms integration time. Need to scale
