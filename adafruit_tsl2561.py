@@ -159,6 +159,8 @@ class TSL2561():
             i2c.write(self.buf, end=2)
 
     def _compute_lux(self):
+        # pylint: disable=chained-comparison
+        # Disable should be removed when refactor can be tested
         """Based on datasheet for FN package."""
         ch0, ch1 = self.luminosity
         if ch0 == 0:
@@ -194,6 +196,8 @@ class TSL2561():
         self._write_control_register(_CONTROL_POWEROFF)
 
     def _read_register(self, reg, count=1):
+        # pylint: disable=no-else-return
+        # Disable should be removed when refactor can be tested
         self.buf[0] = _COMMAND_BIT | reg
         if count == 2:
             self.buf[0] |= _WORD_BIT
