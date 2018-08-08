@@ -194,6 +194,8 @@ class TSL2561():
         self._write_control_register(_CONTROL_POWEROFF)
 
     def _read_register(self, reg, count=1):
+        # pylint: disable=no-else-return
+        # Disable should be removed when refactor can be tested
         self.buf[0] = _COMMAND_BIT | reg
         if count == 2:
             self.buf[0] |= _WORD_BIT

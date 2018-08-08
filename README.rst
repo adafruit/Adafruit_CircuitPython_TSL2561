@@ -10,8 +10,8 @@ Introduction
     :target: https://adafru.it/discord
     :alt: Discord
 
-.. image:: https://travis-ci.org/adafruit/Adafruit_CircuitPython_TLS2561.svg?branch=master
-    :target: https://travis-ci.org/adafruit/Adafruit_CircuitPython_TLS2561
+.. image:: https://travis-ci.org/adafruit/Adafruit_CircuitPython_TSL2561.svg?branch=master
+    :target: https://travis-ci.org/adafruit/Adafruit_CircuitPython_TSL2561
     :alt: Build Status
 
 CircuitPython driver for TSL2561 Light Sensor.
@@ -93,4 +93,3 @@ Now, once you have the virtual environment activated:
 This will output the documentation to ``docs/_build/html``. Open the index.html in your browser to
 view them. It will also (due to -W) error out on any warning like Travis will. This is a good way to
 locally verify it will pass.
-
