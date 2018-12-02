@@ -44,9 +44,9 @@ print("Integration time = {}".format(tsl.integration_time))
 print("Broadband = {}".format(broadband))
 print("Infrared = {}".format(infrared))
 if lux != None:
-  print("Lux = {}".format(lux))
+    print("Lux = {}".format(lux))
 else:
-  print("Lux = NaN")
+    print("Lux = NaN")
 
 # Disble the light sensor (to save power)
 tsl.enabled = False
