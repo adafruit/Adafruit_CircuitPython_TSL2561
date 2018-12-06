@@ -34,7 +34,7 @@ infrared = tsl.infrared
 # Get raw (luminosity) readings using tuple unpacking
 #broadband, infrared = tsl.luminosity
 
-# Get computed lux value
+# Get computed lux value (tsl.lux can return None or a float)
 lux = tsl.lux
 
 # Print results
@@ -43,7 +43,10 @@ print("Gain = {}".format(tsl.gain))
 print("Integration time = {}".format(tsl.integration_time))
 print("Broadband = {}".format(broadband))
 print("Infrared = {}".format(infrared))
-print("Lux = {}".format(lux))
+if lux is not None:
+    print("Lux = {}".format(lux))
+else:
+    print("Lux value is None. Possible sensor underrange or overrange.")
 
 # Disble the light sensor (to save power)
 tsl.enabled = False
