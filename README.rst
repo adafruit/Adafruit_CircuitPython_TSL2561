@@ -10,8 +10,8 @@ Introduction
     :target: https://adafru.it/discord
     :alt: Discord
 
-.. image:: https://travis-ci.org/adafruit/Adafruit_CircuitPython_TSL2561.svg?branch=master
-    :target: https://travis-ci.org/adafruit/Adafruit_CircuitPython_TSL2561
+.. image:: https://travis-ci.com/adafruit/Adafruit_CircuitPython_TSL2561.svg?branch=master
+    :target: https://travis-ci.com/adafruit/Adafruit_CircuitPython_TSL2561
     :alt: Build Status
 
 CircuitPython driver for TSL2561 Light Sensor.
