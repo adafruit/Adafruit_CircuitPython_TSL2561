@@ -63,6 +63,9 @@ _CONTROL_POWEROFF    = const(0x00)
 
 _REGISTER_CONTROL    = const(0x00)
 _REGISTER_TIMING     = const(0x01)
+_REGISTER_TH_LOW     = const(0x02)
+_REGISTER_TH_HIGH    = const(0x04)
+_REGISTER_INT_CTRL   = const(0x06)
 _REGISTER_CHAN0_LOW  = const(0x0C)
 _REGISTER_CHAN1_LOW  = const(0x0E)
 _REGISTER_ID         = const(0x0A)
@@ -157,6 +160,79 @@ class TSL2561():
         self.buf[1] = (current & 0xfc) | value
         with self.i2c_device as i2c:
             i2c.write(self.buf, end=2)
+
+    @property
+    def threshold_low(self):
+        """The low light interrupt threshold level."""
+        low, high = self._read_register(_REGISTER_TH_LOW, 2)
+        return high << 8 | low
+
+    @threshold_low.setter
+    def threshold_low(self, value):
+        self.buf[0] = _COMMAND_BIT | _WORD_BIT | _REGISTER_TH_LOW
+        self.buf[1] = value & 0xff
+        self.buf[2] = (value >> 8) & 0xff
+        with self.i2c_device as i2c:
+            i2c.write(self.buf)
+
+    @property
+    def threshold_high(self):
+        """The upper light interrupt threshold level."""
+        low, high = self._read_register(_REGISTER_TH_HIGH, 2)
+        return high << 8 | low
+
+    @threshold_high.setter
+    def threshold_high(self, value):
+        self.buf[0] = _COMMAND_BIT | _WORD_BIT | _REGISTER_TH_HIGH
+        self.buf[1] = value & 0xff
+        self.buf[2] = (value >> 8) & 0xff
+        with self.i2c_device as i2c:
+            i2c.write(self.buf)
+
+    @property
+    def cycles(self):
+        """The number of integration cycles for which an out of bounds
+           value must persist to cause an interrupt."""
+        value = self._read_register(_REGISTER_INT_CTRL)
+        return value & 0x0f
+
+    @cycles.setter
+    def cycles(self, value):
+        current = self._read_register(_REGISTER_INT_CTRL)
+        self.buf[0] = _COMMAND_BIT | _REGISTER_INT_CTRL
+        self.buf[1] = current | (value & 0x0f)
+        with self.i2c_device as i2c:
+            i2c.write(self.buf, end=2)
+
+    @property
+    def interrupt_mode(self):
+        """The interrupt mode selection.
+
+        ==== =========================
+        Mode Description
+        ==== =========================
+         0   Interrupt output disabled
+         1   Level Interrupt
+         2   SMBAlert compliant
+         3   Test Mode
+        ==== =========================
+
+        """
+        return (self._read_register(_REGISTER_INT_CTRL) >> 4) & 0x03
+
+    @interrupt_mode.setter
+    def interrupt_mode(self, value):
+        current = self._read_register(_REGISTER_INT_CTRL)
+        self.buf[0] = _COMMAND_BIT | _REGISTER_INT_CTRL
+        self.buf[1] = (current & 0x0f) | ((value & 0x03) << 4)
+        with self.i2c_device as i2c:
+            i2c.write(self.buf, end=2)
+
+    def clear_interrupt(self):
+        """Clears any pending interrupt."""
+        self.buf[0] = 0xc0
+        with self.i2c_device as i2c:
+            i2c.write(self.buf, end=1)
 
     def _compute_lux(self):
         """Based on datasheet for FN package."""
