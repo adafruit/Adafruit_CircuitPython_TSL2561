@@ -1,3 +1,4 @@
+import time
 import board
 import busio
 import adafruit_tsl2561
@@ -18,6 +19,7 @@ print("Configuring TSL2561...")
 
 # Enable the light sensor
 tsl.enabled = True
+time.sleep(1)
 
 # Set gain 0=1x, 1=16x
 tsl.gain = 0
