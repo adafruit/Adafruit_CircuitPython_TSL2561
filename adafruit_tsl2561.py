@@ -276,8 +276,7 @@ class TSL2561():
         if count == 2:
             self.buf[0] |= _WORD_BIT
         with self.i2c_device as i2c:
-            i2c.write(self.buf, end=1, stop=False)
-            i2c.readinto(self.buf, start=1)
+            i2c.write_then_readinto(self.buf, self.buf, out_end=1, in_start=1)
         if count == 1:
             return self.buf[1]
         elif count == 2:
