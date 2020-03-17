@@ -34,7 +34,7 @@ broadband = tsl.broadband
 infrared = tsl.infrared
 
 # Get raw (luminosity) readings using tuple unpacking
-#broadband, infrared = tsl.luminosity
+# broadband, infrared = tsl.luminosity
 
 # Get computed lux value (tsl.lux can return None or a float)
 lux = tsl.lux
