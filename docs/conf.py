@@ -43,7 +43,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "Adafruit CIRCUITPYTHON_TSL2561 Library"
+project = "Adafruit TSL2561 Library"
 copyright = "2017 Carter Nelson"
 author = "Carter Nelson"
 
@@ -118,7 +118,7 @@ html_static_path = ["_static"]
 html_favicon = "_static/favicon.ico"
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "AdafruitCIRCUITPYTHON_TSL2561Librarydoc"
+htmlhelp_basename = "AdafruitTSL2561Librarydoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -143,8 +143,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "AdafruitCIRCUITPYTHON_TSL2561Library.tex",
-        "Adafruit CIRCUITPYTHON_TSL2561 Library Documentation",
+        "AdafruitTSL2561Library.tex",
+        "Adafruit TSL2561 Library Documentation",
         author,
         "manual",
     ),
@@ -157,8 +157,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "AdafruitCIRCUITPYTHON_TSL2561library",
-        "Adafruit CIRCUITPYTHON_TSL2561 Library Documentation",
+        "AdafruitTSL2561library",
+        "Adafruit TSL2561 Library Documentation",
         [author],
         1,
     )
