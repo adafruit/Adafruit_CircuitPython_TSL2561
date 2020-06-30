@@ -6,7 +6,7 @@ Introduction
     :target: https://circuitpython.readthedocs.io/projects/tsl2561/en/latest/
     :alt: Documentation Status
 
-.. image :: https://img.shields.io/discord/327254708534116352.svg
+.. image:: https://img.shields.io/discord/327254708534116352.svg
     :target: https://adafru.it/discord
     :alt: Discord
 
