@@ -53,7 +53,6 @@ from micropython import const
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_TSL2561.git"
 
-# pylint: disable=bad-whitespace
 _DEFAULT_ADDRESS = const(0x39)
 _COMMAND_BIT = const(0x80)
 _WORD_BIT = const(0x20)
@@ -73,7 +72,6 @@ _REGISTER_ID = const(0x0A)
 _GAIN_SCALE = (16, 1)
 _TIME_SCALE = (1 / 0.034, 1 / 0.252, 1)
 _CLIP_THRESHOLD = (4900, 37000, 65000)
-# pylint: enable=bad-whitespace
 
 
 class TSL2561:
