@@ -65,6 +65,11 @@ Usage Example
     >>> tsl.lux
     3294.37
 
+Documentation
+=============
+
+API documentation for this library can be found on `Read the Docs <https://circuitpython.readthedocs.io/projects/tsl2561/en/latest/>`_.
+
 Contributing
 ============
 
