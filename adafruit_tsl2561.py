@@ -229,7 +229,7 @@ class TSL2561:
             return None
         ratio = ch1 / ch0
         if 0 <= ratio <= 0.50:
-            lux = 0.0304 * ch0 - 0.062 * ch0 * ratio ** 1.4
+            lux = 0.0304 * ch0 - 0.062 * ch0 * ratio**1.4
         elif ratio <= 0.61:
             lux = 0.0224 * ch0 - 0.031 * ch1
         elif ratio <= 0.80:
