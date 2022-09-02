@@ -34,7 +34,7 @@ from adafruit_bus_device.i2c_device import I2CDevice
 from micropython import const
 
 try:
-    from typing import Tuple, Union  # pylint: disable=unused-import
+    from typing import Optional, Tuple
     from busio import I2C
 except ImportError:
     pass
@@ -99,7 +99,7 @@ class TSL2561:
             self._disable()
 
     @property
-    def lux(self) -> Union[None, float]:
+    def lux(self) -> Optional[float]:
         """The computed lux value or None when value is not computable."""
         return self._compute_lux()
 
@@ -224,7 +224,7 @@ class TSL2561:
         with self.i2c_device as i2c:
             i2c.write(self.buf, end=1)
 
-    def _compute_lux(self) -> Union[None, float]:
+    def _compute_lux(self) -> Optional[float]:
         """Based on datasheet for FN package."""
         ch0, ch1 = self.luminosity
         if ch0 == 0:
@@ -259,9 +259,9 @@ class TSL2561:
     def _disable(self) -> None:
         self._write_control_register(_CONTROL_POWEROFF)
 
-    def _read_register(self, reg: int, count: int = 1) -> Union[int, Tuple[int, int]]:
-        # pylint: disable=no-else-return
-        # Disable should be removed when refactor can be tested
+    def _read_register(self, reg: int, count: int = 1) -> Tuple[int, Tuple[int, int]]:
+        if count not in (1, 2):
+            raise RuntimeError("Can only read up to 2 consecutive registers")
         self.buf[0] = _COMMAND_BIT | reg
         if count == 2:
             self.buf[0] |= _WORD_BIT
@@ -269,9 +269,7 @@ class TSL2561:
             i2c.write_then_readinto(self.buf, self.buf, out_end=1, in_start=1)
         if count == 1:
             return self.buf[1]
-        elif count == 2:
-            return self.buf[1], self.buf[2]
-        return None
+        return self.buf[1], self.buf[2]
 
     def _write_control_register(self, reg: int) -> None:
         self.buf[0] = _COMMAND_BIT | _REGISTER_CONTROL
