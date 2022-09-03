@@ -34,7 +34,7 @@ from adafruit_bus_device.i2c_device import I2CDevice
 from micropython import const
 
 try:
-    from typing import Optional, Tuple
+    from typing import Optional, Tuple, Union
     from busio import I2C
 except ImportError:
     pass
@@ -259,7 +259,7 @@ class TSL2561:
     def _disable(self) -> None:
         self._write_control_register(_CONTROL_POWEROFF)
 
-    def _read_register(self, reg: int, count: int = 1) -> Tuple[int, Tuple[int, int]]:
+    def _read_register(self, reg: int, count: int = 1) -> Union[int, Tuple[int, int]]:
         if count not in (1, 2):
             raise RuntimeError("Can only read up to 2 consecutive registers")
         self.buf[0] = _COMMAND_BIT | reg
