@@ -30,11 +30,13 @@ Implementation Notes
   https://github.com/adafruit/circuitpython/releases
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
+
 from adafruit_bus_device.i2c_device import I2CDevice
 from micropython import const
 
 try:
     from typing import Optional, Tuple, Union
+
     from busio import I2C
 except ImportError:
     pass
@@ -72,9 +74,7 @@ class TSL2561:
         partno, revno = self.chip_id
         # data sheet says TSL2561 = 0001, reality says 0101
         if not partno == 5:
-            raise RuntimeError(
-                f"Failed to find TSL2561! Part {hex(partno)} Rev {hex(revno)}"
-            )
+            raise RuntimeError(f"Failed to find TSL2561! Part {hex(partno)} Rev {hex(revno)}")
         self.enabled = True
 
     @property
@@ -260,7 +260,7 @@ class TSL2561:
         self._write_control_register(_CONTROL_POWEROFF)
 
     def _read_register(self, reg: int, count: int = 1) -> Union[int, Tuple[int, int]]:
-        if count not in (1, 2):
+        if count not in {1, 2}:
             raise RuntimeError("Can only read up to 2 consecutive registers")
         self.buf[0] = _COMMAND_BIT | reg
         if count == 2:

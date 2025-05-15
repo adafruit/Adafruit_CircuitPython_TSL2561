@@ -2,8 +2,10 @@
 # SPDX-License-Identifier: MIT
 
 import time
+
 import board
 import busio
+
 import adafruit_tsl2561
 
 # Create the I2C bus
@@ -13,10 +15,10 @@ i2c = busio.I2C(board.SCL, board.SDA)
 tsl = adafruit_tsl2561.TSL2561(i2c)
 
 # Print chip info
-print("Chip ID = {}".format(tsl.chip_id))
-print("Enabled = {}".format(tsl.enabled))
-print("Gain = {}".format(tsl.gain))
-print("Integration time = {}".format(tsl.integration_time))
+print(f"Chip ID = {tsl.chip_id}")
+print(f"Enabled = {tsl.enabled}")
+print(f"Gain = {tsl.gain}")
+print(f"Integration time = {tsl.integration_time}")
 
 print("Configuring TSL2561...")
 
@@ -43,13 +45,13 @@ infrared = tsl.infrared
 lux = tsl.lux
 
 # Print results
-print("Enabled = {}".format(tsl.enabled))
-print("Gain = {}".format(tsl.gain))
-print("Integration time = {}".format(tsl.integration_time))
-print("Broadband = {}".format(broadband))
-print("Infrared = {}".format(infrared))
+print(f"Enabled = {tsl.enabled}")
+print(f"Gain = {tsl.gain}")
+print(f"Integration time = {tsl.integration_time}")
+print(f"Broadband = {broadband}")
+print(f"Infrared = {infrared}")
 if lux is not None:
-    print("Lux = {}".format(lux))
+    print(f"Lux = {lux}")
 else:
     print("Lux value is None. Possible sensor underrange or overrange.")
 
